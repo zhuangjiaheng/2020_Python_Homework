@@ -33,3 +33,17 @@
 | place_plot_3(df_emo_plc_tag)  | 聚类结果展示               |
 | dynamic_place(df_emo_plc_tag) | timeline动态可视化         |
 
+### Week5：演艺圈网络分析
+
+
+
+
+
+### Week6：通信簿类
+
++ **类**提供两种英文查找方式：`search` 及 `hash_sort` ;一种中文查找方式`chinese_sort` 
+
+  在主函数中可以通过`search_all`将所有的元素全部搜索一遍，从而计算搜索时间，给出搜索效率
+
++ `random_tel` 和 `random_mail` 是为了保证随机过后的数据尽可能拟合真实情况（且都保持11位从而便于比较）
+

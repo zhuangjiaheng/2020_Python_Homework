@@ -63,3 +63,25 @@
 运行`CO2.py`
 
 + 在代码中解除相关内容的注释可以进行相应的操作，操作介绍在每段注释的头部
+
+
+
+### Week9：关系显示装饰器
+
++ 相关文件信息
+
+` RelationNetwork.py`：用于实现文本关系可视化的类，提供`lazy_vis`外函数构建闭包，实现一次导入，多次利用的功能，实例化的函数由`vis`定义
+
+`main.py`
+
++ 装饰器的使用
+
+  **进度条**：引入tqdm包，直接运行`main.py`
+
+  **时间管理**：在`main.py`中打开`@profile`装饰器，同时关闭`RelationNetwork.py`中的内存管理装饰器`@profile`，在命令行中运行` kernprof -l -v main.py`
+
+  **内存管理**：关闭`main.py`中的`@profile`装饰器，同时打开`RelationNetwork.py`中的内存管理装饰器`@profile`，直接运行`main.py`
+
+  **声音装饰器**：`@sound`装饰器，直接运行`main.py`
+
+  检查装饰器：`@check_file`，直接运行`main.py`

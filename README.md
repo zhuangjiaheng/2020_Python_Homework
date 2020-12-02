@@ -94,3 +94,15 @@
 
 ### Week11：
 
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+remote: error: Trace: 2527381d7933e120c521d62f21eaa4439684613abf692fe6e357c8d2480022e7
+remote: error: See http://git.io/iEPt8g for more information.
+remote: error: File Week11/report/Week11 适配器模式.assets/snow.gif is 140.76 MB; this exceeds GitHub's file size limit of 100.00 MB
+remote: error: File Week11/report/Week11 适配器模式.assets/test_mini.gif is 145.65 MB; this exceeds GitHub's file size limit of 100.00 MB
+To https://github.com/zhuangjiaheng/2020_Python_Homework.git
+ ! [remote rejected] master -> master (pre-receive hook declined)
+error: failed to push some refs to 'https://github.com/zhuangjiaheng/2020_Python_Homework.git'
+
+两个gif文件几个比较大的文件上传失败
+
+解决方案：创建.gitignore文件，把文件放进去

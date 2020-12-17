@@ -306,10 +306,10 @@ def monitor(total_page_num):
 if __name__ == '__main__':
 	# CONFIG
     # setting number of pages and number of threads
-    page_num = 2
-    num_craw_threads = 2
+    page_num = 35
+    num_craw_threads = 7
     # setting the breakpoint information via breakpoint.json
-    breakpoint = 1
+    # breakpoint = 1
     start_from_break_point = 0
     if start_from_break_point == 1:
         with open("./breakpoint.json","r") as f:

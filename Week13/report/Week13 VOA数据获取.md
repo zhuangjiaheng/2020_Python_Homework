@@ -376,7 +376,7 @@ def monitor(total_page_num):
     print("close: monitor ! ")
 ```
 
-### 13.4 多线程实现
+### 13.4 多线程主函数
 
 先定义一些参数，（若`start_from_break_point=0`，则从头下载，若`start_from_break_point=1`，则根据`breakpoint.json`中的断点信息进行恢复）然后通过13.2.3得到`link_list`，对`link_list`进行多线程爬虫
 
@@ -443,15 +443,88 @@ if __name__ == '__main__':
         save_data(data_list, "../results/voa(1).xls")
 ```
 
+### 13.5 爬取结果
+
++ 爬虫过程中的监控信息返回结果
+
+  完整的信息见附录
+
+  ![image-20201217200421395](Week13 VOA数据获取.assets/image-20201217200421395.png)
+
++ 爬取前两个页面的文本汇总结果
+
+  ![image-20201216092321138](Week13 VOA数据获取.assets/image-20201216092321138.png)
+
++ VOA网站的音频列表
+
+![image-20201216092505525](Week13 VOA数据获取.assets/image-20201216092505525.png)
+
+![image-20201216092630433](Week13 VOA数据获取.assets/image-20201216092630433.png)
+
++ 断点数据记录
+
+> {"2020-12-07 19:45:51": {"id": 10, "error": "HTTPError"}}
+
+发现下载第十页数据时抛出HTTPError异常，经检验为网站提供的下载链接有误
+
++ 监控数据及网络异常测试
+
+> =========Check 30 Report========
+> 	 total_page: 14
+> 	 finished_page: 0
+> 	 remain_page: 14
+> 	 memory_used: 28.50 MB
+> 	 memory_need: 1433.77 MB
+> 	 run_time: 15.79 s
+> 	 predict_time: 794.44 s
+> [WinError 10065] 套接字操作尝试一个无法连接的主机。
+> close : 7 !
+> [Errno 11001] getaddrinfo failed
+> close : 8 !
+> [Errno 11001] getaddrinfo failed
+> close : 9 !
+> [Errno 11001] getaddrinfo failed
+> close : 10 !
+> [Errno 11001] getaddrinfo failed
+> close : 11 !
+> [Errno 11001] getaddrinfo failed
+> close : 12 !
+> [Errno 11001] getaddrinfo failed
+> close : 13 !
+> [Errno 11001] getaddrinfo failed
+> close : 14 !
+> 4
+>
+> =========Check 40 Report========
+> 	 total_page: 14
+> 	 finished_page: 4
+> 	 remain_page: 10
+> 	 memory_used: 28.50 MB
+> 	 memory_need: 1015.98 MB
+> 	 run_time: 21.07 s
+> 	 predict_time: 751.16 s
+
+breakpoint.json如下所示
+
+> {"2020-12-07 19:14:05": {"id": 7, "error": "URLError"}, "2020-12-07 19:14:06": {"id": 8, "error": "URLError"}, "2020-12-07 19:14:07": {"id": 9, "error": "URLError"}, "2020-12-07 19:14:08": {"id": 10, "error": "URLError"}, "2020-12-07 19:14:09": {"id": 11, "error": "URLError"}, "2020-12-07 19:14:10": {"id": 12, "error": "URLError"}, "2020-12-07 19:14:11": {"id": 13, "error": "URLError"}, "2020-12-07 19:14:12": {"id": 14, "error": "URLError"}}
+
+此时修改部分参数即可重新下载断点处的内容
+
+```python
+if __name__ == '__main__':
+	# CONFIG
+    page_num = 7  # 总共需要恢复7页数据 
+    num_craw_threads = 4
+    start_from_break_point = 1      
+    if start_from_break_point == 1:  # 开启断点重载模式，指定开始位置和需要恢复的页面数
+        with open("./breakpoint.json","r") as f:
+            j = json.load(f)
+            breakpoint = j["2020-12-07 19:14:05"]["id"]  # 从断点开始
+```
 
 
-![image-20201206232343452](Week13 VOA数据获取.assets/image-20201206232343452.png)
 
-![image-20201206233353959](Week13 VOA数据获取.assets/image-20201206233353959.png)
-
-
-
-### 13.4 一些表达
+### 13.6 一些表达
 
 + 多个线程轮流对一个数据结构进行操作
 
@@ -490,9 +563,9 @@ req = urllib.request.Request(url=url, headers=headers)
             print(ue.reason)
 ```
 
+### 13.7 附录
 
-
-
++ 成功下载35页的完整的反馈信息
 
 > D:\Downloads\Anaconda\anaconda\python.exe "E:/大三上2020秋/1 现代程序设计技术/Homework/Week13/codes/VoaSpider.py"
 > collect page1
@@ -535,1416 +608,1189 @@ req = urllib.request.Request(url=url, headers=headers)
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 14.52 MB
-> 	 memory_need: 3622.19 MB
-> 	 run_time: 5.25 s
-> 	 predict_time: 1309.46 s
+> 	 memory_used: 0.00 MB
+> 	 memory_need: 3636.71 MB
+> 	 run_time: 5.10 s
+> 	 predict_time: 99999 s
 >
 > =========Check 20 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 32.92 MB
-> 	 memory_need: 3603.79 MB
-> 	 run_time: 10.37 s
-> 	 predict_time: 1135.17 s
+> 	 memory_used: 21.29 MB
+> 	 memory_need: 3615.41 MB
+> 	 run_time: 10.30 s
+> 	 predict_time: 1748.26 s
 >
 > =========Check 30 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 55.98 MB
-> 	 memory_need: 3580.73 MB
-> 	 run_time: 15.60 s
-> 	 predict_time: 998.13 s
+> 	 memory_used: 37.17 MB
+> 	 memory_need: 3599.54 MB
+> 	 run_time: 15.38 s
+> 	 predict_time: 1489.01 s
 >
 > =========Check 40 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 81.53 MB
-> 	 memory_need: 3555.17 MB
-> 	 run_time: 21.11 s
-> 	 predict_time: 920.28 s
+> 	 memory_used: 60.62 MB
+> 	 memory_need: 3576.09 MB
+> 	 run_time: 20.70 s
+> 	 predict_time: 1221.38 s
 >
 > =========Check 50 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 102.53 MB
-> 	 memory_need: 3534.18 MB
-> 	 run_time: 26.36 s
-> 	 predict_time: 908.79 s
+> 	 memory_used: 86.20 MB
+> 	 memory_need: 3550.50 MB
+> 	 run_time: 26.09 s
+> 	 predict_time: 1074.58 s
 >
 > =========Check 60 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 126.68 MB
-> 	 memory_need: 3510.02 MB
-> 	 run_time: 31.70 s
-> 	 predict_time: 878.24 s
+> 	 memory_used: 107.66 MB
+> 	 memory_need: 3529.05 MB
+> 	 run_time: 31.31 s
+> 	 predict_time: 1026.52 s
 >
 > =========Check 70 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 146.51 MB
-> 	 memory_need: 3490.19 MB
-> 	 run_time: 36.98 s
-> 	 predict_time: 880.90 s
+> 	 memory_used: 131.39 MB
+> 	 memory_need: 3505.32 MB
+> 	 run_time: 36.46 s
+> 	 predict_time: 972.74 s
 >
 > =========Check 80 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 172.87 MB
-> 	 memory_need: 3463.83 MB
-> 	 run_time: 42.35 s
-> 	 predict_time: 848.64 s
+> 	 memory_used: 154.55 MB
+> 	 memory_need: 3482.15 MB
+> 	 run_time: 41.58 s
+> 	 predict_time: 936.89 s
 >
 > =========Check 90 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 191.50 MB
-> 	 memory_need: 3445.21 MB
-> 	 run_time: 47.69 s
-> 	 predict_time: 857.91 s
+> 	 memory_used: 176.01 MB
+> 	 memory_need: 3460.70 MB
+> 	 run_time: 46.84 s
+> 	 predict_time: 920.87 s
 >
 > =========Check 100 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 211.83 MB
-> 	 memory_need: 3424.88 MB
-> 	 run_time: 52.96 s
-> 	 predict_time: 856.21 s
+> 	 memory_used: 197.30 MB
+> 	 memory_need: 3439.41 MB
+> 	 run_time: 51.95 s
+> 	 predict_time: 905.67 s
 >
 > =========Check 110 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 236.42 MB
-> 	 memory_need: 3400.29 MB
-> 	 run_time: 58.25 s
-> 	 predict_time: 837.76 s
+> 	 memory_used: 215.83 MB
+> 	 memory_need: 3420.87 MB
+> 	 run_time: 57.03 s
+> 	 predict_time: 903.89 s
 >
 > =========Check 120 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 257.52 MB
-> 	 memory_need: 3379.18 MB
-> 	 run_time: 63.70 s
-> 	 predict_time: 835.84 s
+> 	 memory_used: 241.07 MB
+> 	 memory_need: 3395.63 MB
+> 	 run_time: 62.15 s
+> 	 predict_time: 875.36 s
 >
 > =========Check 130 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 278.50 MB
-> 	 memory_need: 3358.20 MB
-> 	 run_time: 69.00 s
-> 	 predict_time: 832.02 s
+> 	 memory_used: 261.38 MB
+> 	 memory_need: 3375.32 MB
+> 	 run_time: 67.87 s
+> 	 predict_time: 876.45 s
 >
 > =========Check 140 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 301.05 MB
-> 	 memory_need: 3335.66 MB
-> 	 run_time: 74.27 s
-> 	 predict_time: 822.87 s
+> 	 memory_used: 283.27 MB
+> 	 memory_need: 3353.44 MB
+> 	 run_time: 73.39 s
+> 	 predict_time: 868.78 s
 >
 > =========Check 150 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 322.99 MB
-> 	 memory_need: 3313.71 MB
-> 	 run_time: 79.31 s
-> 	 predict_time: 813.69 s
+> 	 memory_used: 306.51 MB
+> 	 memory_need: 3330.20 MB
+> 	 run_time: 78.85 s
+> 	 predict_time: 856.66 s
 >
 > =========Check 160 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 343.03 MB
-> 	 memory_need: 3293.67 MB
-> 	 run_time: 84.51 s
-> 	 predict_time: 811.43 s
+> 	 memory_used: 328.01 MB
+> 	 memory_need: 3308.70 MB
+> 	 run_time: 84.38 s
+> 	 predict_time: 851.15 s
 >
 > =========Check 170 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 367.21 MB
-> 	 memory_need: 3269.50 MB
-> 	 run_time: 89.53 s
-> 	 predict_time: 797.11 s
+> 	 memory_used: 349.30 MB
+> 	 memory_need: 3287.41 MB
+> 	 run_time: 90.04 s
+> 	 predict_time: 847.42 s
 >
 > =========Check 180 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 391.51 MB
-> 	 memory_need: 3245.19 MB
-> 	 run_time: 94.62 s
-> 	 predict_time: 784.28 s
+> 	 memory_used: 373.97 MB
+> 	 memory_need: 3262.73 MB
+> 	 run_time: 95.32 s
+> 	 predict_time: 831.59 s
 >
 > =========Check 190 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 413.92 MB
-> 	 memory_need: 3222.78 MB
-> 	 run_time: 99.65 s
-> 	 predict_time: 775.86 s
+> 	 memory_used: 396.23 MB
+> 	 memory_need: 3240.48 MB
+> 	 run_time: 100.66 s
+> 	 predict_time: 823.20 s
 >
 > =========Check 200 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 435.40 MB
-> 	 memory_need: 3201.31 MB
-> 	 run_time: 104.66 s
-> 	 predict_time: 769.52 s
+> 	 memory_used: 417.17 MB
+> 	 memory_need: 3219.54 MB
+> 	 run_time: 105.89 s
+> 	 predict_time: 817.22 s
 >
 > =========Check 210 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 457.84 MB
-> 	 memory_need: 3178.87 MB
-> 	 run_time: 109.70 s
-> 	 predict_time: 761.70 s
+> 	 memory_used: 439.63 MB
+> 	 memory_need: 3197.08 MB
+> 	 run_time: 111.09 s
+> 	 predict_time: 807.85 s
 >
 > =========Check 220 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 481.72 MB
-> 	 memory_need: 3154.98 MB
-> 	 run_time: 114.77 s
-> 	 predict_time: 751.66 s
+> 	 memory_used: 461.29 MB
+> 	 memory_need: 3175.42 MB
+> 	 run_time: 116.54 s
+> 	 predict_time: 802.22 s
 >
 > =========Check 230 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 505.90 MB
-> 	 memory_need: 3130.81 MB
-> 	 run_time: 119.82 s
-> 	 predict_time: 741.52 s
+> 	 memory_used: 485.83 MB
+> 	 memory_need: 3150.87 MB
+> 	 run_time: 121.69 s
+> 	 predict_time: 789.23 s
 >
 > =========Check 240 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 528.81 MB
-> 	 memory_need: 3107.89 MB
-> 	 run_time: 124.83 s
-> 	 predict_time: 733.63 s
+> 	 memory_used: 510.91 MB
+> 	 memory_need: 3125.80 MB
+> 	 run_time: 127.03 s
+> 	 predict_time: 777.18 s
 >
 > =========Check 250 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 551.05 MB
-> 	 memory_need: 3085.66 MB
-> 	 run_time: 129.83 s
-> 	 predict_time: 727.03 s
+> 	 memory_used: 533.83 MB
+> 	 memory_need: 3102.88 MB
+> 	 run_time: 132.07 s
+> 	 predict_time: 767.63 s
 >
 > =========Check 260 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 574.17 MB
-> 	 memory_need: 3062.54 MB
-> 	 run_time: 134.84 s
-> 	 predict_time: 719.23 s
+> 	 memory_used: 555.33 MB
+> 	 memory_need: 3081.38 MB
+> 	 run_time: 137.41 s
+> 	 predict_time: 762.45 s
 >
 > =========Check 270 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 597.66 MB
-> 	 memory_need: 3039.04 MB
-> 	 run_time: 139.87 s
-> 	 predict_time: 711.21 s
+> 	 memory_used: 578.61 MB
+> 	 memory_need: 3058.09 MB
+> 	 run_time: 143.02 s
+> 	 predict_time: 755.89 s
 >
 > =========Check 280 Report========
 > 	 total_page: 35
 > 	 finished_page: 0
 > 	 remain_page: 35
-> 	 memory_used: 623.11 MB
-> 	 memory_need: 3013.60 MB
-> 	 run_time: 145.06 s
-> 	 predict_time: 701.59 s
->
-> =========Check 290 Report========
-> 	 total_page: 35
-> 	 finished_page: 0
-> 	 remain_page: 35
-> 	 memory_used: 646.93 MB
-> 	 memory_need: 2989.77 MB
-> 	 run_time: 150.38 s
-> 	 predict_time: 694.97 s
->
-> =========Check 300 Report========
-> 	 total_page: 35
-> 	 finished_page: 0
-> 	 remain_page: 35
-> 	 memory_used: 668.96 MB
-> 	 memory_need: 2967.75 MB
-> 	 run_time: 155.98 s
-> 	 predict_time: 692.00 s
->
-> =========Check 310 Report========
-> 	 total_page: 35
-> 	 finished_page: 0
-> 	 remain_page: 35
-> 	 memory_used: 690.21 MB
-> 	 memory_need: 2946.49 MB
-> 	 run_time: 161.09 s
-> 	 predict_time: 687.68 s
->
-> =========Check 320 Report========
-> 	 total_page: 35
-> 	 finished_page: 0
-> 	 remain_page: 35
-> 	 memory_used: 711.45 MB
-> 	 memory_need: 2925.26 MB
-> 	 run_time: 166.20 s
-> 	 predict_time: 683.38 s
->
-> =========Check 330 Report========
-> 	 total_page: 35
-> 	 finished_page: 0
-> 	 remain_page: 35
-> 	 memory_used: 732.75 MB
-> 	 memory_need: 2903.96 MB
-> 	 run_time: 171.29 s
-> 	 predict_time: 678.86 s
-> close : 1 !
->
-> =========Check 340 Report========
-> 	 total_page: 35
-> 	 finished_page: 1
-> 	 remain_page: 34
-> 	 memory_used: 742.53 MB
-> 	 memory_need: 2894.18 MB
-> 	 run_time: 176.38 s
-> 	 predict_time: 687.48 s
->
-> =========Check 350 Report========
-> 	 total_page: 35
-> 	 finished_page: 1
-> 	 remain_page: 34
-> 	 memory_used: 758.64 MB
-> 	 memory_need: 2878.06 MB
-> 	 run_time: 181.50 s
-> 	 predict_time: 688.57 s
->
-> =========Check 360 Report========
-> 	 total_page: 35
-> 	 finished_page: 1
-> 	 remain_page: 34
-> 	 memory_used: 765.38 MB
-> 	 memory_need: 2871.32 MB
-> 	 run_time: 186.65 s
-> 	 predict_time: 700.23 s
->
-> =========Check 370 Report========
-> 	 total_page: 35
-> 	 finished_page: 1
-> 	 remain_page: 34
-> 	 memory_used: 769.28 MB
-> 	 memory_need: 2867.43 MB
-> 	 run_time: 191.76 s
-> 	 predict_time: 714.78 s
+> 	 memory_used: 602.42 MB
+> 	 memory_need: 3034.29 MB
+> 	 run_time: 148.60 s
+> 	 predict_time: 748.48 s
 > close : 3 !
->
-> =========Check 380 Report========
-> 	 total_page: 35
-> 	 finished_page: 2
-> 	 remain_page: 33
-> 	 memory_used: 775.88 MB
-> 	 memory_need: 2860.83 MB
-> 	 run_time: 196.98 s
-> 	 predict_time: 726.31 s
-> close : 5 !
->
-> =========Check 390 Report========
-> 	 total_page: 35
-> 	 finished_page: 3
-> 	 remain_page: 32
-> 	 memory_used: 791.87 MB
-> 	 memory_need: 2844.84 MB
-> 	 run_time: 202.13 s
-> 	 predict_time: 726.16 s
+> close : 1 !
 > close : 6 !
 > close : 7 !
 > close : 4 !
+> close : 5 !
 > close : 2 !
 >
-> =========Check 400 Report========
+> =========Check 290 Report========
 > 	 total_page: 35
 > 	 finished_page: 7
 > 	 remain_page: 28
-> 	 memory_used: 816.82 MB
-> 	 memory_need: 2819.89 MB
-> 	 run_time: 207.61 s
-> 	 predict_time: 716.73 s
+> 	 memory_used: 627.94 MB
+> 	 memory_need: 3008.76 MB
+> 	 run_time: 154.10 s
+> 	 predict_time: 738.36 s
 >
-> =========Check 410 Report========
+> =========Check 300 Report========
 > 	 total_page: 35
 > 	 finished_page: 7
 > 	 remain_page: 28
-> 	 memory_used: 840.20 MB
-> 	 memory_need: 2796.51 MB
-> 	 run_time: 212.89 s
-> 	 predict_time: 708.57 s
+> 	 memory_used: 650.80 MB
+> 	 memory_need: 2985.90 MB
+> 	 run_time: 159.49 s
+> 	 predict_time: 731.74 s
 >
-> =========Check 420 Report========
+> =========Check 310 Report========
 > 	 total_page: 35
 > 	 finished_page: 7
 > 	 remain_page: 28
-> 	 memory_used: 866.27 MB
-> 	 memory_need: 2770.43 MB
-> 	 run_time: 218.39 s
-> 	 predict_time: 698.44 s
+> 	 memory_used: 672.68 MB
+> 	 memory_need: 2964.02 MB
+> 	 run_time: 164.70 s
+> 	 predict_time: 725.73 s
 >
-> =========Check 430 Report========
+> =========Check 320 Report========
 > 	 total_page: 35
 > 	 finished_page: 7
 > 	 remain_page: 28
-> 	 memory_used: 888.35 MB
-> 	 memory_need: 2748.35 MB
-> 	 run_time: 223.84 s
-> 	 predict_time: 692.51 s
+> 	 memory_used: 697.18 MB
+> 	 memory_need: 2939.52 MB
+> 	 run_time: 170.10 s
+> 	 predict_time: 717.19 s
+>
+> =========Check 330 Report========
+> 	 total_page: 35
+> 	 finished_page: 7
+> 	 remain_page: 28
+> 	 memory_used: 718.05 MB
+> 	 memory_need: 2918.65 MB
+> 	 run_time: 175.21 s
+> 	 predict_time: 712.18 s
+>
+> =========Check 340 Report========
+> 	 total_page: 35
+> 	 finished_page: 7
+> 	 remain_page: 28
+> 	 memory_used: 740.46 MB
+> 	 memory_need: 2896.25 MB
+> 	 run_time: 180.84 s
+> 	 predict_time: 707.35 s
+>
+> =========Check 350 Report========
+> 	 total_page: 35
+> 	 finished_page: 7
+> 	 remain_page: 28
+> 	 memory_used: 762.70 MB
+> 	 memory_need: 2874.01 MB
+> 	 run_time: 186.32 s
+> 	 predict_time: 702.11 s
 > 404
 > Not Found
 > close : 10 !
+>
+> =========Check 360 Report========
+> 	 total_page: 35
+> 	 finished_page: 8
+> 	 remain_page: 27
+> 	 memory_used: 784.88 MB
+> 	 memory_need: 2747.92 MB
+> 	 run_time: 191.62 s
+> 	 predict_time: 670.87 s
+>
+> =========Check 370 Report========
+> 	 total_page: 35
+> 	 finished_page: 8
+> 	 remain_page: 27
+> 	 memory_used: 805.71 MB
+> 	 memory_need: 2727.09 MB
+> 	 run_time: 196.95 s
+> 	 predict_time: 666.61 s
+>
+> =========Check 380 Report========
+> 	 total_page: 35
+> 	 finished_page: 8
+> 	 remain_page: 27
+> 	 memory_used: 828.44 MB
+> 	 memory_need: 2704.36 MB
+> 	 run_time: 202.38 s
+> 	 predict_time: 660.64 s
+>
+> =========Check 390 Report========
+> 	 total_page: 35
+> 	 finished_page: 8
+> 	 remain_page: 27
+> 	 memory_used: 855.47 MB
+> 	 memory_need: 2677.33 MB
+> 	 run_time: 207.69 s
+> 	 predict_time: 650.01 s
+>
+> =========Check 400 Report========
+> 	 total_page: 35
+> 	 finished_page: 8
+> 	 remain_page: 27
+> 	 memory_used: 880.11 MB
+> 	 memory_need: 2652.69 MB
+> 	 run_time: 213.12 s
+> 	 predict_time: 642.35 s
+>
+> =========Check 410 Report========
+> 	 total_page: 35
+> 	 finished_page: 8
+> 	 remain_page: 27
+> 	 memory_used: 902.73 MB
+> 	 memory_need: 2630.07 MB
+> 	 run_time: 218.67 s
+> 	 predict_time: 637.07 s
+>
+> =========Check 420 Report========
+> 	 total_page: 35
+> 	 finished_page: 8
+> 	 remain_page: 27
+> 	 memory_used: 925.97 MB
+> 	 memory_need: 2606.83 MB
+> 	 run_time: 224.04 s
+> 	 predict_time: 630.72 s
+>
+> =========Check 430 Report========
+> 	 total_page: 35
+> 	 finished_page: 8
+> 	 remain_page: 27
+> 	 memory_used: 952.16 MB
+> 	 memory_need: 2580.64 MB
+> 	 run_time: 230.19 s
+> 	 predict_time: 623.87 s
 >
 > =========Check 440 Report========
 > 	 total_page: 35
 > 	 finished_page: 8
 > 	 remain_page: 27
-> 	 memory_used: 909.95 MB
-> 	 memory_need: 2622.85 MB
-> 	 run_time: 229.49 s
-> 	 predict_time: 661.48 s
+> 	 memory_used: 975.36 MB
+> 	 memory_need: 2557.44 MB
+> 	 run_time: 235.67 s
+> 	 predict_time: 617.93 s
 >
 > =========Check 450 Report========
 > 	 total_page: 35
 > 	 finished_page: 8
 > 	 remain_page: 27
-> 	 memory_used: 931.97 MB
-> 	 memory_need: 2600.83 MB
-> 	 run_time: 234.98 s
-> 	 predict_time: 655.75 s
+> 	 memory_used: 996.21 MB
+> 	 memory_need: 2536.59 MB
+> 	 run_time: 241.11 s
+> 	 predict_time: 613.92 s
 >
 > =========Check 460 Report========
 > 	 total_page: 35
 > 	 finished_page: 8
 > 	 remain_page: 27
-> 	 memory_used: 961.38 MB
-> 	 memory_need: 2571.42 MB
-> 	 run_time: 240.33 s
-> 	 predict_time: 642.81 s
+> 	 memory_used: 1021.27 MB
+> 	 memory_need: 2511.53 MB
+> 	 run_time: 246.51 s
+> 	 predict_time: 606.21 s
 >
 > =========Check 470 Report========
 > 	 total_page: 35
 > 	 finished_page: 8
 > 	 remain_page: 27
-> 	 memory_used: 983.77 MB
-> 	 memory_need: 2549.03 MB
-> 	 run_time: 245.85 s
-> 	 predict_time: 637.00 s
+> 	 memory_used: 1045.75 MB
+> 	 memory_need: 2487.05 MB
+> 	 run_time: 251.68 s
+> 	 predict_time: 598.54 s
 >
 > =========Check 480 Report========
 > 	 total_page: 35
 > 	 finished_page: 8
 > 	 remain_page: 27
-> 	 memory_used: 1007.86 MB
-> 	 memory_need: 2524.94 MB
-> 	 run_time: 251.51 s
-> 	 predict_time: 630.10 s
+> 	 memory_used: 1066.78 MB
+> 	 memory_need: 2466.02 MB
+> 	 run_time: 256.96 s
+> 	 predict_time: 594.00 s
 >
 > =========Check 490 Report========
 > 	 total_page: 35
 > 	 finished_page: 8
 > 	 remain_page: 27
-> 	 memory_used: 1030.47 MB
-> 	 memory_need: 2502.33 MB
-> 	 run_time: 256.85 s
-> 	 predict_time: 623.72 s
+> 	 memory_used: 1094.67 MB
+> 	 memory_need: 2438.13 MB
+> 	 run_time: 262.32 s
+> 	 predict_time: 584.25 s
 >
 > =========Check 500 Report========
 > 	 total_page: 35
 > 	 finished_page: 8
 > 	 remain_page: 27
-> 	 memory_used: 1054.12 MB
-> 	 memory_need: 2478.68 MB
-> 	 run_time: 262.27 s
-> 	 predict_time: 616.71 s
+> 	 memory_used: 1122.40 MB
+> 	 memory_need: 2410.40 MB
+> 	 run_time: 267.54 s
+> 	 predict_time: 574.55 s
+> close : 11 !
 >
 > =========Check 510 Report========
 > 	 total_page: 35
-> 	 finished_page: 8
-> 	 remain_page: 27
-> 	 memory_used: 1079.96 MB
-> 	 memory_need: 2452.84 MB
-> 	 run_time: 267.61 s
-> 	 predict_time: 607.80 s
+> 	 finished_page: 9
+> 	 remain_page: 26
+> 	 memory_used: 1148.33 MB
+> 	 memory_need: 2384.47 MB
+> 	 run_time: 272.92 s
+> 	 predict_time: 566.70 s
+> close : 8 !
+> close : 12 !
+> close : 14 !
 >
 > =========Check 520 Report========
 > 	 total_page: 35
-> 	 finished_page: 8
-> 	 remain_page: 27
-> 	 memory_used: 1108.16 MB
-> 	 memory_need: 2424.64 MB
-> 	 run_time: 273.01 s
-> 	 predict_time: 597.34 s
+> 	 finished_page: 12
+> 	 remain_page: 23
+> 	 memory_used: 1176.00 MB
+> 	 memory_need: 2356.80 MB
+> 	 run_time: 278.16 s
+> 	 predict_time: 557.46 s
+> close : 13 !
+> close : 9 !
 >
 > =========Check 530 Report========
 > 	 total_page: 35
-> 	 finished_page: 8
-> 	 remain_page: 27
-> 	 memory_used: 1131.85 MB
-> 	 memory_need: 2400.95 MB
-> 	 run_time: 278.51 s
-> 	 predict_time: 590.80 s
+> 	 finished_page: 14
+> 	 remain_page: 21
+> 	 memory_used: 1200.54 MB
+> 	 memory_need: 2332.26 MB
+> 	 run_time: 283.31 s
+> 	 predict_time: 550.39 s
 >
 > =========Check 540 Report========
 > 	 total_page: 35
-> 	 finished_page: 8
-> 	 remain_page: 27
-> 	 memory_used: 1159.43 MB
-> 	 memory_need: 2373.37 MB
-> 	 run_time: 283.65 s
-> 	 predict_time: 580.63 s
+> 	 finished_page: 14
+> 	 remain_page: 21
+> 	 memory_used: 1224.83 MB
+> 	 memory_need: 2307.97 MB
+> 	 run_time: 288.54 s
+> 	 predict_time: 543.70 s
 >
 > =========Check 550 Report========
 > 	 total_page: 35
-> 	 finished_page: 8
-> 	 remain_page: 27
-> 	 memory_used: 1183.77 MB
-> 	 memory_need: 2349.03 MB
-> 	 run_time: 288.99 s
-> 	 predict_time: 573.46 s
+> 	 finished_page: 14
+> 	 remain_page: 21
+> 	 memory_used: 1250.38 MB
+> 	 memory_need: 2282.42 MB
+> 	 run_time: 294.24 s
+> 	 predict_time: 537.10 s
 >
 > =========Check 560 Report========
 > 	 total_page: 35
-> 	 finished_page: 8
-> 	 remain_page: 27
-> 	 memory_used: 1212.41 MB
-> 	 memory_need: 2320.39 MB
-> 	 run_time: 294.15 s
-> 	 predict_time: 562.97 s
-> close : 8 !
+> 	 finished_page: 14
+> 	 remain_page: 21
+> 	 memory_used: 1272.06 MB
+> 	 memory_need: 2260.74 MB
+> 	 run_time: 299.57 s
+> 	 predict_time: 532.40 s
 >
 > =========Check 570 Report========
 > 	 total_page: 35
-> 	 finished_page: 9
-> 	 remain_page: 26
-> 	 memory_used: 1235.64 MB
-> 	 memory_need: 2297.16 MB
-> 	 run_time: 299.57 s
-> 	 predict_time: 556.93 s
+> 	 finished_page: 14
+> 	 remain_page: 21
+> 	 memory_used: 1297.12 MB
+> 	 memory_need: 2235.68 MB
+> 	 run_time: 304.97 s
+> 	 predict_time: 525.64 s
+> close : 15 !
 >
 > =========Check 580 Report========
 > 	 total_page: 35
-> 	 finished_page: 9
-> 	 remain_page: 26
-> 	 memory_used: 1259.46 MB
-> 	 memory_need: 2273.34 MB
-> 	 run_time: 304.71 s
-> 	 predict_time: 550.00 s
-> close : 11 !
-> close : 9 !
+> 	 finished_page: 15
+> 	 remain_page: 20
+> 	 memory_used: 1320.53 MB
+> 	 memory_need: 2212.27 MB
+> 	 run_time: 310.30 s
+> 	 predict_time: 519.84 s
 >
 > =========Check 590 Report========
 > 	 total_page: 35
-> 	 finished_page: 11
-> 	 remain_page: 24
-> 	 memory_used: 1281.67 MB
-> 	 memory_need: 2251.13 MB
-> 	 run_time: 309.92 s
-> 	 predict_time: 544.34 s
-> close : 12 !
-> close : 14 !
-> close : 13 !
+> 	 finished_page: 15
+> 	 remain_page: 20
+> 	 memory_used: 1346.62 MB
+> 	 memory_need: 2186.18 MB
+> 	 run_time: 315.35 s
+> 	 predict_time: 511.95 s
 >
 > =========Check 600 Report========
 > 	 total_page: 35
-> 	 finished_page: 14
-> 	 remain_page: 21
-> 	 memory_used: 1303.17 MB
-> 	 memory_need: 2229.63 MB
-> 	 run_time: 315.30 s
-> 	 predict_time: 539.46 s
+> 	 finished_page: 15
+> 	 remain_page: 20
+> 	 memory_used: 1371.61 MB
+> 	 memory_need: 2161.19 MB
+> 	 run_time: 320.53 s
+> 	 predict_time: 505.04 s
 >
 > =========Check 610 Report========
 > 	 total_page: 35
-> 	 finished_page: 14
-> 	 remain_page: 21
-> 	 memory_used: 1328.15 MB
-> 	 memory_need: 2204.65 MB
-> 	 run_time: 320.53 s
-> 	 predict_time: 532.05 s
+> 	 finished_page: 15
+> 	 remain_page: 20
+> 	 memory_used: 1393.90 MB
+> 	 memory_need: 2138.90 MB
+> 	 run_time: 325.58 s
+> 	 predict_time: 499.60 s
 >
 > =========Check 620 Report========
 > 	 total_page: 35
-> 	 finished_page: 14
-> 	 remain_page: 21
-> 	 memory_used: 1352.32 MB
-> 	 memory_need: 2180.48 MB
-> 	 run_time: 325.85 s
-> 	 predict_time: 525.41 s
+> 	 finished_page: 15
+> 	 remain_page: 20
+> 	 memory_used: 1414.78 MB
+> 	 memory_need: 2118.02 MB
+> 	 run_time: 330.66 s
+> 	 predict_time: 495.02 s
 >
 > =========Check 630 Report========
 > 	 total_page: 35
-> 	 finished_page: 14
-> 	 remain_page: 21
-> 	 memory_used: 1377.12 MB
-> 	 memory_need: 2155.68 MB
-> 	 run_time: 331.10 s
-> 	 predict_time: 518.29 s
+> 	 finished_page: 15
+> 	 remain_page: 20
+> 	 memory_used: 1442.47 MB
+> 	 memory_need: 2090.33 MB
+> 	 run_time: 335.83 s
+> 	 predict_time: 486.66 s
 >
 > =========Check 640 Report========
 > 	 total_page: 35
-> 	 finished_page: 14
-> 	 remain_page: 21
-> 	 memory_used: 1402.96 MB
-> 	 memory_need: 2129.84 MB
-> 	 run_time: 336.24 s
-> 	 predict_time: 510.45 s
-> close : 15 !
+> 	 finished_page: 15
+> 	 remain_page: 20
+> 	 memory_used: 1464.15 MB
+> 	 memory_need: 2068.65 MB
+> 	 run_time: 341.01 s
+> 	 predict_time: 481.80 s
 >
 > =========Check 650 Report========
 > 	 total_page: 35
 > 	 finished_page: 15
 > 	 remain_page: 20
-> 	 memory_used: 1423.94 MB
-> 	 memory_need: 2108.86 MB
-> 	 run_time: 341.81 s
-> 	 predict_time: 506.23 s
+> 	 memory_used: 1489.94 MB
+> 	 memory_need: 2042.86 MB
+> 	 run_time: 346.04 s
+> 	 predict_time: 474.45 s
 >
 > =========Check 660 Report========
 > 	 total_page: 35
 > 	 finished_page: 15
 > 	 remain_page: 20
-> 	 memory_used: 1449.94 MB
-> 	 memory_need: 2082.86 MB
-> 	 run_time: 347.06 s
-> 	 predict_time: 498.56 s
+> 	 memory_used: 1511.99 MB
+> 	 memory_need: 2020.81 MB
+> 	 run_time: 351.34 s
+> 	 predict_time: 469.58 s
 >
 > =========Check 670 Report========
 > 	 total_page: 35
 > 	 finished_page: 15
 > 	 remain_page: 20
-> 	 memory_used: 1475.90 MB
-> 	 memory_need: 2056.90 MB
-> 	 run_time: 352.22 s
-> 	 predict_time: 490.87 s
+> 	 memory_used: 1534.88 MB
+> 	 memory_need: 1997.92 MB
+> 	 run_time: 356.65 s
+> 	 predict_time: 464.24 s
+> **[WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。**
+> **close : 16 !**
 >
 > =========Check 680 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1499.31 MB
-> 	 memory_need: 2033.49 MB
-> 	 run_time: 358.05 s
-> 	 predict_time: 485.61 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1562.73 MB
+> 	 memory_need: 1866.16 MB
+> 	 run_time: 361.75 s
+> 	 predict_time: 431.99 s
 >
 > =========Check 690 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1522.60 MB
-> 	 memory_need: 2010.20 MB
-> 	 run_time: 363.46 s
-> 	 predict_time: 479.86 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1586.70 MB
+> 	 memory_need: 1842.20 MB
+> 	 run_time: 366.87 s
+> 	 predict_time: 425.95 s
 >
 > =========Check 700 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1545.30 MB
-> 	 memory_need: 1987.50 MB
-> 	 run_time: 368.99 s
-> 	 predict_time: 474.57 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1611.15 MB
+> 	 memory_need: 1817.74 MB
+> 	 run_time: 372.02 s
+> 	 predict_time: 419.73 s
 >
 > =========Check 710 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1567.44 MB
-> 	 memory_need: 1965.36 MB
-> 	 run_time: 374.49 s
-> 	 predict_time: 469.56 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1633.61 MB
+> 	 memory_need: 1795.28 MB
+> 	 run_time: 377.15 s
+> 	 predict_time: 414.48 s
 >
 > =========Check 720 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1594.16 MB
-> 	 memory_need: 1938.64 MB
-> 	 run_time: 380.08 s
-> 	 predict_time: 462.20 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1662.04 MB
+> 	 memory_need: 1766.86 MB
+> 	 run_time: 382.31 s
+> 	 predict_time: 406.42 s
 >
 > =========Check 730 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1620.04 MB
-> 	 memory_need: 1912.76 MB
-> 	 run_time: 385.39 s
-> 	 predict_time: 455.02 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1685.98 MB
+> 	 memory_need: 1742.92 MB
+> 	 run_time: 387.61 s
+> 	 predict_time: 400.70 s
 >
 > =========Check 740 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1644.05 MB
-> 	 memory_need: 1888.75 MB
-> 	 run_time: 390.68 s
-> 	 predict_time: 448.83 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1711.54 MB
+> 	 memory_need: 1717.36 MB
+> 	 run_time: 392.85 s
+> 	 predict_time: 394.18 s
 >
 > =========Check 750 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1668.55 MB
-> 	 memory_need: 1864.25 MB
-> 	 run_time: 395.93 s
-> 	 predict_time: 442.37 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1734.93 MB
+> 	 memory_need: 1693.97 MB
+> 	 run_time: 398.19 s
+> 	 predict_time: 388.79 s
 >
 > =========Check 760 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1693.98 MB
-> 	 memory_need: 1838.82 MB
-> 	 run_time: 401.32 s
-> 	 predict_time: 435.63 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1756.50 MB
+> 	 memory_need: 1672.39 MB
+> 	 run_time: 403.53 s
+> 	 predict_time: 384.21 s
 >
 > =========Check 770 Report========
 > 	 total_page: 35
-> 	 finished_page: 15
-> 	 remain_page: 20
-> 	 memory_used: 1724.15 MB
-> 	 memory_need: 1808.65 MB
-> 	 run_time: 406.78 s
-> 	 predict_time: 426.71 s
-> close : 16 !
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1775.78 MB
+> 	 memory_need: 1653.11 MB
+> 	 run_time: 408.63 s
+> 	 predict_time: 380.40 s
 >
 > =========Check 780 Report========
 > 	 total_page: 35
 > 	 finished_page: 16
 > 	 remain_page: 19
-> 	 memory_used: 1744.33 MB
-> 	 memory_need: 1788.47 MB
-> 	 run_time: 412.14 s
-> 	 predict_time: 422.57 s
-> close : 21 !
+> 	 memory_used: 1796.62 MB
+> 	 memory_need: 1632.28 MB
+> 	 run_time: 413.83 s
+> 	 predict_time: 375.98 s
 >
 > =========Check 790 Report========
 > 	 total_page: 35
-> 	 finished_page: 17
-> 	 remain_page: 18
-> 	 memory_used: 1762.83 MB
-> 	 memory_need: 1769.97 MB
-> 	 run_time: 417.74 s
-> 	 predict_time: 419.43 s
-> close : 18 !
-> close : 17 !
-> close : 20 !
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1819.97 MB
+> 	 memory_need: 1608.92 MB
+> 	 run_time: 419.05 s
+> 	 predict_time: 370.45 s
 >
 > =========Check 800 Report========
 > 	 total_page: 35
-> 	 finished_page: 20
-> 	 remain_page: 15
-> 	 memory_used: 1784.37 MB
-> 	 memory_need: 1748.43 MB
-> 	 run_time: 423.69 s
-> 	 predict_time: 415.16 s
-> close : 19 !
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1845.62 MB
+> 	 memory_need: 1583.27 MB
+> 	 run_time: 424.40 s
+> 	 predict_time: 364.07 s
 >
 > =========Check 810 Report========
 > 	 total_page: 35
-> 	 finished_page: 21
-> 	 remain_page: 14
-> 	 memory_used: 1808.45 MB
-> 	 memory_need: 1724.35 MB
-> 	 run_time: 429.32 s
-> 	 predict_time: 409.36 s
+> 	 finished_page: 16
+> 	 remain_page: 19
+> 	 memory_used: 1864.92 MB
+> 	 memory_need: 1563.98 MB
+> 	 run_time: 429.80 s
+> 	 predict_time: 360.44 s
+> close : 19 !
 >
 > =========Check 820 Report========
 > 	 total_page: 35
-> 	 finished_page: 21
-> 	 remain_page: 14
-> 	 memory_used: 1836.19 MB
-> 	 memory_need: 1696.61 MB
-> 	 run_time: 434.69 s
-> 	 predict_time: 401.64 s
+> 	 finished_page: 17
+> 	 remain_page: 18
+> 	 memory_used: 1884.60 MB
+> 	 memory_need: 1544.29 MB
+> 	 run_time: 435.14 s
+> 	 predict_time: 356.56 s
+> close : 17 !
+> close : 21 !
 >
 > =========Check 830 Report========
 > 	 total_page: 35
-> 	 finished_page: 21
-> 	 remain_page: 14
-> 	 memory_used: 1854.81 MB
-> 	 memory_need: 1677.99 MB
-> 	 run_time: 440.02 s
-> 	 predict_time: 398.07 s
-> close : 22 !
+> 	 finished_page: 19
+> 	 remain_page: 16
+> 	 memory_used: 1903.11 MB
+> 	 memory_need: 1525.78 MB
+> 	 run_time: 440.65 s
+> 	 predict_time: 353.28 s
 >
 > =========Check 840 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 1873.86 MB
-> 	 memory_need: 1658.94 MB
-> 	 run_time: 445.73 s
-> 	 predict_time: 394.61 s
+> 	 finished_page: 19
+> 	 remain_page: 16
+> 	 memory_used: 1926.32 MB
+> 	 memory_need: 1502.57 MB
+> 	 run_time: 446.20 s
+> 	 predict_time: 348.05 s
+> close : 18 !
+> close : 20 !
 >
 > =========Check 850 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 1890.83 MB
-> 	 memory_need: 1641.97 MB
-> 	 run_time: 451.00 s
-> 	 predict_time: 391.64 s
+> 	 finished_page: 21
+> 	 remain_page: 14
+> 	 memory_used: 1944.09 MB
+> 	 memory_need: 1484.81 MB
+> 	 run_time: 451.58 s
+> 	 predict_time: 344.89 s
 >
 > =========Check 860 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 1910.43 MB
-> 	 memory_need: 1622.37 MB
-> 	 run_time: 456.52 s
-> 	 predict_time: 387.68 s
+> 	 finished_page: 21
+> 	 remain_page: 14
+> 	 memory_used: 1970.73 MB
+> 	 memory_need: 1458.17 MB
+> 	 run_time: 457.04 s
+> 	 predict_time: 338.17 s
 >
 > =========Check 870 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 1935.15 MB
-> 	 memory_need: 1597.65 MB
-> 	 run_time: 461.92 s
-> 	 predict_time: 381.36 s
+> 	 finished_page: 21
+> 	 remain_page: 14
+> 	 memory_used: 1990.26 MB
+> 	 memory_need: 1438.63 MB
+> 	 run_time: 462.28 s
+> 	 predict_time: 334.15 s
 >
 > =========Check 880 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 1955.31 MB
-> 	 memory_need: 1577.49 MB
-> 	 run_time: 467.45 s
-> 	 predict_time: 377.13 s
+> 	 finished_page: 21
+> 	 remain_page: 14
+> 	 memory_used: 2010.68 MB
+> 	 memory_need: 1418.21 MB
+> 	 run_time: 467.61 s
+> 	 predict_time: 329.82 s
+> close : 22 !
 >
 > =========Check 890 Report========
 > 	 total_page: 35
 > 	 finished_page: 22
 > 	 remain_page: 13
-> 	 memory_used: 1975.06 MB
-> 	 memory_need: 1557.74 MB
-> 	 run_time: 472.91 s
-> 	 predict_time: 372.99 s
+> 	 memory_used: 2032.56 MB
+> 	 memory_need: 1396.34 MB
+> 	 run_time: 473.11 s
+> 	 predict_time: 325.02 s
 >
 > =========Check 900 Report========
 > 	 total_page: 35
 > 	 finished_page: 22
 > 	 remain_page: 13
-> 	 memory_used: 1992.05 MB
-> 	 memory_need: 1540.75 MB
-> 	 run_time: 478.24 s
-> 	 predict_time: 369.90 s
+> 	 memory_used: 2046.62 MB
+> 	 memory_need: 1382.27 MB
+> 	 run_time: 478.62 s
+> 	 predict_time: 323.25 s
+> close : 23 !
 >
 > =========Check 910 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 2015.70 MB
-> 	 memory_need: 1517.10 MB
-> 	 run_time: 483.44 s
-> 	 predict_time: 363.86 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2062.55 MB
+> 	 memory_need: 1366.34 MB
+> 	 run_time: 484.19 s
+> 	 predict_time: 320.75 s
 >
 > =========Check 920 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 2037.73 MB
-> 	 memory_need: 1495.07 MB
-> 	 run_time: 488.67 s
-> 	 predict_time: 358.54 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2086.49 MB
+> 	 memory_need: 1342.40 MB
+> 	 run_time: 490.27 s
+> 	 predict_time: 315.43 s
 >
 > =========Check 930 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 2055.66 MB
-> 	 memory_need: 1477.14 MB
-> 	 run_time: 494.20 s
-> 	 predict_time: 355.12 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2103.80 MB
+> 	 memory_need: 1325.10 MB
+> 	 run_time: 495.43 s
+> 	 predict_time: 312.05 s
 >
 > =========Check 940 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 2078.59 MB
-> 	 memory_need: 1454.21 MB
-> 	 run_time: 499.45 s
-> 	 predict_time: 349.42 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2123.44 MB
+> 	 memory_need: 1305.46 MB
+> 	 run_time: 500.64 s
+> 	 predict_time: 307.79 s
 >
 > =========Check 950 Report========
 > 	 total_page: 35
-> 	 finished_page: 22
-> 	 remain_page: 13
-> 	 memory_used: 2102.93 MB
-> 	 memory_need: 1429.87 MB
-> 	 run_time: 504.80 s
-> 	 predict_time: 343.24 s
-> close : 25 !
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2142.80 MB
+> 	 memory_need: 1286.09 MB
+> 	 run_time: 506.00 s
+> 	 predict_time: 303.69 s
 >
 > =========Check 960 Report========
 > 	 total_page: 35
 > 	 finished_page: 23
 > 	 remain_page: 12
-> 	 memory_used: 2123.08 MB
-> 	 memory_need: 1409.72 MB
-> 	 run_time: 510.32 s
-> 	 predict_time: 338.85 s
-> close : 23 !
-> close : 26 !
-> close : 24 !
+> 	 memory_used: 2165.77 MB
+> 	 memory_need: 1263.12 MB
+> 	 run_time: 511.16 s
+> 	 predict_time: 298.12 s
 >
 > =========Check 970 Report========
 > 	 total_page: 35
-> 	 finished_page: 26
-> 	 remain_page: 9
-> 	 memory_used: 2143.54 MB
-> 	 memory_need: 1389.26 MB
-> 	 run_time: 515.64 s
-> 	 predict_time: 334.20 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2193.07 MB
+> 	 memory_need: 1235.82 MB
+> 	 run_time: 516.33 s
+> 	 predict_time: 290.96 s
 >
 > =========Check 980 Report========
 > 	 total_page: 35
-> 	 finished_page: 26
-> 	 remain_page: 9
-> 	 memory_used: 2165.29 MB
-> 	 memory_need: 1367.51 MB
-> 	 run_time: 521.41 s
-> 	 predict_time: 329.30 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2211.63 MB
+> 	 memory_need: 1217.27 MB
+> 	 run_time: 521.47 s
+> 	 predict_time: 287.01 s
 >
 > =========Check 990 Report========
 > 	 total_page: 35
-> 	 finished_page: 26
-> 	 remain_page: 9
-> 	 memory_used: 2187.15 MB
-> 	 memory_need: 1345.65 MB
-> 	 run_time: 526.64 s
-> 	 predict_time: 324.01 s
-> close : 27 !
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2232.09 MB
+> 	 memory_need: 1196.80 MB
+> 	 run_time: 526.73 s
+> 	 predict_time: 282.42 s
 >
 > =========Check 1000 Report========
 > 	 total_page: 35
-> 	 finished_page: 27
-> 	 remain_page: 8
-> 	 memory_used: 2212.59 MB
-> 	 memory_need: 1320.21 MB
-> 	 run_time: 531.86 s
-> 	 predict_time: 317.35 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2258.46 MB
+> 	 memory_need: 1170.44 MB
+> 	 run_time: 532.04 s
+> 	 predict_time: 275.73 s
 >
 > =========Check 1010 Report========
 > 	 total_page: 35
-> 	 finished_page: 27
-> 	 remain_page: 8
-> 	 memory_used: 2237.63 MB
-> 	 memory_need: 1295.17 MB
-> 	 run_time: 537.02 s
-> 	 predict_time: 310.83 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2273.77 MB
+> 	 memory_need: 1155.12 MB
+> 	 run_time: 537.58 s
+> 	 predict_time: 273.10 s
 >
 > =========Check 1020 Report========
 > 	 total_page: 35
-> 	 finished_page: 27
-> 	 remain_page: 8
-> 	 memory_used: 2259.40 MB
-> 	 memory_need: 1273.40 MB
-> 	 run_time: 542.14 s
-> 	 predict_time: 305.55 s
+> 	 finished_page: 23
+> 	 remain_page: 12
+> 	 memory_used: 2294.28 MB
+> 	 memory_need: 1134.61 MB
+> 	 run_time: 542.88 s
+> 	 predict_time: 268.47 s
+> close : 24 !
 >
 > =========Check 1030 Report========
 > 	 total_page: 35
-> 	 finished_page: 27
-> 	 remain_page: 8
-> 	 memory_used: 2277.28 MB
-> 	 memory_need: 1255.52 MB
-> 	 run_time: 547.29 s
-> 	 predict_time: 301.73 s
-> close : 28 !
+> 	 finished_page: 24
+> 	 remain_page: 11
+> 	 memory_used: 2310.26 MB
+> 	 memory_need: 1118.63 MB
+> 	 run_time: 548.37 s
+> 	 predict_time: 265.52 s
+> close : 25 !
 >
 > =========Check 1040 Report========
 > 	 total_page: 35
-> 	 finished_page: 28
-> 	 remain_page: 7
-> 	 memory_used: 2296.02 MB
-> 	 memory_need: 1236.78 MB
-> 	 run_time: 552.68 s
-> 	 predict_time: 297.71 s
+> 	 finished_page: 25
+> 	 remain_page: 10
+> 	 memory_used: 2329.05 MB
+> 	 memory_need: 1099.84 MB
+> 	 run_time: 553.59 s
+> 	 predict_time: 261.42 s
+> close : 26 !
 >
 > =========Check 1050 Report========
 > 	 total_page: 35
-> 	 finished_page: 28
-> 	 remain_page: 7
-> 	 memory_used: 2318.86 MB
-> 	 memory_need: 1213.94 MB
-> 	 run_time: 557.93 s
-> 	 predict_time: 292.08 s
-> close : 29 !
+> 	 finished_page: 26
+> 	 remain_page: 9
+> 	 memory_used: 2346.64 MB
+> 	 memory_need: 1082.25 MB
+> 	 run_time: 559.01 s
+> 	 predict_time: 257.81 s
 >
 > =========Check 1060 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2337.15 MB
-> 	 memory_need: 1195.65 MB
-> 	 run_time: 563.29 s
-> 	 predict_time: 288.17 s
+> 	 finished_page: 26
+> 	 remain_page: 9
+> 	 memory_used: 2364.54 MB
+> 	 memory_need: 1064.35 MB
+> 	 run_time: 564.31 s
+> 	 predict_time: 254.01 s
 >
 > =========Check 1070 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2358.24 MB
-> 	 memory_need: 1174.56 MB
-> 	 run_time: 568.67 s
-> 	 predict_time: 283.24 s
+> 	 finished_page: 26
+> 	 remain_page: 9
+> 	 memory_used: 2382.87 MB
+> 	 memory_need: 1046.02 MB
+> 	 run_time: 569.72 s
+> 	 predict_time: 250.09 s
+> close : 27 !
 >
 > =========Check 1080 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2384.74 MB
-> 	 memory_need: 1148.06 MB
-> 	 run_time: 574.12 s
-> 	 predict_time: 276.39 s
+> 	 finished_page: 27
+> 	 remain_page: 8
+> 	 memory_used: 2396.69 MB
+> 	 memory_need: 1032.20 MB
+> 	 run_time: 574.89 s
+> 	 predict_time: 247.59 s
 >
 > =========Check 1090 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2406.19 MB
-> 	 memory_need: 1126.61 MB
-> 	 run_time: 579.40 s
-> 	 predict_time: 271.28 s
+> 	 finished_page: 27
+> 	 remain_page: 8
+> 	 memory_used: 2416.52 MB
+> 	 memory_need: 1012.37 MB
+> 	 run_time: 580.05 s
+> 	 predict_time: 243.00 s
+> close : 28 !
 >
 > =========Check 1100 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2423.10 MB
-> 	 memory_need: 1109.70 MB
-> 	 run_time: 584.84 s
-> 	 predict_time: 267.84 s
+> 	 finished_page: 28
+> 	 remain_page: 7
+> 	 memory_used: 2429.13 MB
+> 	 memory_need: 999.76 MB
+> 	 run_time: 585.64 s
+> 	 predict_time: 241.03 s
+> close : 29 !
 >
 > =========Check 1110 Report========
 > 	 total_page: 35
 > 	 finished_page: 29
 > 	 remain_page: 6
-> 	 memory_used: 2436.88 MB
-> 	 memory_need: 1095.92 MB
-> 	 run_time: 590.08 s
-> 	 predict_time: 265.37 s
+> 	 memory_used: 2466.37 MB
+> 	 memory_need: 962.53 MB
+> 	 run_time: 591.10 s
+> 	 predict_time: 230.68 s
 >
 > =========Check 1120 Report========
 > 	 total_page: 35
 > 	 finished_page: 29
 > 	 remain_page: 6
-> 	 memory_used: 2452.86 MB
-> 	 memory_need: 1079.94 MB
-> 	 run_time: 595.52 s
-> 	 predict_time: 262.19 s
+> 	 memory_used: 2487.54 MB
+> 	 memory_need: 941.35 MB
+> 	 run_time: 596.54 s
+> 	 predict_time: 225.75 s
+> close : 30 !
 >
 > =========Check 1130 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2492.59 MB
-> 	 memory_need: 1040.21 MB
-> 	 run_time: 600.74 s
-> 	 predict_time: 250.70 s
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2501.82 MB
+> 	 memory_need: 927.08 MB
+> 	 run_time: 602.18 s
+> 	 predict_time: 223.14 s
 >
 > =========Check 1140 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2512.62 MB
-> 	 memory_need: 1020.18 MB
-> 	 run_time: 605.95 s
-> 	 predict_time: 246.03 s
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2517.42 MB
+> 	 memory_need: 911.47 MB
+> 	 run_time: 607.38 s
+> 	 predict_time: 219.91 s
 >
 > =========Check 1150 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2529.68 MB
-> 	 memory_need: 1003.12 MB
-> 	 run_time: 611.19 s
-> 	 predict_time: 242.36 s
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2536.82 MB
+> 	 memory_need: 892.08 MB
+> 	 run_time: 612.48 s
+> 	 predict_time: 215.38 s
 >
 > =========Check 1160 Report========
 > 	 total_page: 35
-> 	 finished_page: 29
-> 	 remain_page: 6
-> 	 memory_used: 2546.17 MB
-> 	 memory_need: 986.63 MB
-> 	 run_time: 616.53 s
-> 	 predict_time: 238.90 s
-> close : 30 !
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2551.08 MB
+> 	 memory_need: 877.81 MB
+> 	 run_time: 617.82 s
+> 	 predict_time: 212.59 s
 >
 > =========Check 1170 Report========
 > 	 total_page: 35
 > 	 finished_page: 30
 > 	 remain_page: 5
-> 	 memory_used: 2558.59 MB
-> 	 memory_need: 974.21 MB
-> 	 run_time: 621.91 s
-> 	 predict_time: 236.80 s
-> close : 32 !
-> close : 35 !
+> 	 memory_used: 2563.28 MB
+> 	 memory_need: 865.61 MB
+> 	 run_time: 623.15 s
+> 	 predict_time: 210.44 s
 >
 > =========Check 1180 Report========
 > 	 total_page: 35
-> 	 finished_page: 32
-> 	 remain_page: 3
-> 	 memory_used: 2575.78 MB
-> 	 memory_need: 957.02 MB
-> 	 run_time: 627.31 s
-> 	 predict_time: 233.08 s
-> close : 31 !
-> close : 34 !
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2586.79 MB
+> 	 memory_need: 842.10 MB
+> 	 run_time: 628.37 s
+> 	 predict_time: 204.56 s
 >
 > =========Check 1190 Report========
 > 	 total_page: 35
-> 	 finished_page: 34
-> 	 remain_page: 1
-> 	 memory_used: 2589.78 MB
-> 	 memory_need: 943.02 MB
-> 	 run_time: 632.59 s
-> 	 predict_time: 230.35 s
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2597.29 MB
+> 	 memory_need: 831.60 MB
+> 	 run_time: 633.66 s
+> 	 predict_time: 202.88 s
 >
 > =========Check 1200 Report========
 > 	 total_page: 35
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2617.02 MB
+> 	 memory_need: 811.87 MB
+> 	 run_time: 639.11 s
+> 	 predict_time: 198.27 s
+>
+> =========Check 1210 Report========
+> 	 total_page: 35
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2629.17 MB
+> 	 memory_need: 799.72 MB
+> 	 run_time: 644.34 s
+> 	 predict_time: 195.99 s
+>
+> =========Check 1220 Report========
+> 	 total_page: 35
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2643.41 MB
+> 	 memory_need: 785.48 MB
+> 	 run_time: 649.58 s
+> 	 predict_time: 193.02 s
+>
+> =========Check 1230 Report========
+> 	 total_page: 35
+> 	 finished_page: 30
+> 	 remain_page: 5
+> 	 memory_used: 2655.68 MB
+> 	 memory_need: 773.21 MB
+> 	 run_time: 654.76 s
+> 	 predict_time: 190.64 s
+> close : 31 !
+> close : 35 !
+>
+> =========Check 1240 Report========
+> 	 total_page: 35
+> 	 finished_page: 32
+> 	 remain_page: 3
+> 	 memory_used: 2666.21 MB
+> 	 memory_need: 762.69 MB
+> 	 run_time: 659.86 s
+> 	 predict_time: 188.76 s
+> close : 32 !
+>
+> =========Check 1250 Report========
+> 	 total_page: 35
+> 	 finished_page: 33
+> 	 remain_page: 2
+> 	 memory_used: 2692.30 MB
+> 	 memory_need: 736.59 MB
+> 	 run_time: 664.97 s
+> 	 predict_time: 181.93 s
+> close : 33 !
+>
+> =========Check 1260 Report========
+> 	 total_page: 35
 > 	 finished_page: 34
 > 	 remain_page: 1
-> 	 memory_used: 2612.27 MB
-> 	 memory_need: 920.53 MB
-> 	 run_time: 637.75 s
-> 	 predict_time: 224.74 s
-> close : 33 !
-> 15408
-> successfully download the data!
-> 1
+> 	 memory_used: 2709.35 MB
+> 	 memory_need: 719.54 MB
+> 	 run_time: 670.08 s
+> 	 predict_time: 177.96 s
+> close : 34 !
+> 13480
+> **successfully download the data!**
+> 2
 >
-> =========Check 1202 Report========
+> =========Check 1266 Report========
 > 	 total_page: 35
 > 	 finished_page: 35
 > 	 remain_page: 0
-> 	 memory_used: 2613.31 MB
-> 	 memory_need: 919.49 MB
-> 	 run_time: 638.95 s
-> 	 predict_time: 224.81 s
-> close: monitor ! 
+> 	 memory_used: 2725.94 MB
+> 	 memory_need: 702.96 MB
+> 	 run_time: 673.13 s
+> 	 predict_time: 173.59 s
+> **close: monitor !** 
 >
 > Process finished with exit code 0
 
+breakpoint.json信息
 
-
-
-
-
-
-+ 14页断网操作
-
-> D:\Downloads\Anaconda\anaconda\python.exe "E:/大三上2020秋/1 现代程序设计技术/Homework/Week13/codes/VoaSpider.py"
-> collect page1
-> collect page2
-> collect page3
-> collect page4
-> collect page5
-> collect page6
-> collect page7
-> collect page8
-> collect page9
-> collect page10
-> collect page11
-> collect page12
-> collect page13
-> collect page14
-> 0
->
-> =========Check 10 Report========
-> 	 total_page: 14
-> 	 finished_page: 0
-> 	 remain_page: 14
-> 	 memory_used: 21.38 MB
-> 	 memory_need: 1440.89 MB
-> 	 run_time: 5.50 s
-> 	 predict_time: 370.62 s
-> 0
->
-> =========Check 20 Report========
-> 	 total_page: 14
-> 	 finished_page: 0
-> 	 remain_page: 14
-> 	 memory_used: 28.50 MB
-> 	 memory_need: 1433.77 MB
-> 	 run_time: 10.64 s
-> 	 predict_time: 535.39 s
-> 0
->
-> =========Check 30 Report========
-> 	 total_page: 14
-> 	 finished_page: 0
-> 	 remain_page: 14
-> 	 memory_used: 28.50 MB
-> 	 memory_need: 1433.77 MB
-> 	 run_time: 15.79 s
-> 	 predict_time: 794.44 s
-> [WinError 10065] 套接字操作尝试一个无法连接的主机。
-> close : 7 !
-> [Errno 11001] getaddrinfo failed
-> close : 8 !
-> [Errno 11001] getaddrinfo failed
-> close : 9 !
-> [Errno 11001] getaddrinfo failed
-> close : 10 !
-> [Errno 11001] getaddrinfo failed
-> close : 11 !
-> [Errno 11001] getaddrinfo failed
-> close : 12 !
-> [Errno 11001] getaddrinfo failed
-> close : 13 !
-> [Errno 11001] getaddrinfo failed
-> close : 14 !
-> 4
->
-> =========Check 40 Report========
-> 	 total_page: 14
-> 	 finished_page: 4
-> 	 remain_page: 10
-> 	 memory_used: 28.50 MB
-> 	 memory_need: 1015.98 MB
-> 	 run_time: 21.07 s
-> 	 predict_time: 751.16 s
-> 8
->
-> =========Check 50 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 35.26 MB
-> 	 memory_need: 591.43 MB
-> 	 run_time: 26.31 s
-> 	 predict_time: 441.36 s
-> 8
->
-> =========Check 60 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 59.20 MB
-> 	 memory_need: 567.49 MB
-> 	 run_time: 31.59 s
-> 	 predict_time: 302.85 s
-> 8
->
-> =========Check 70 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 84.33 MB
-> 	 memory_need: 542.36 MB
-> 	 run_time: 36.83 s
-> 	 predict_time: 236.86 s
-> 8
->
-> =========Check 80 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 105.30 MB
-> 	 memory_need: 521.39 MB
-> 	 run_time: 42.01 s
-> 	 predict_time: 208.03 s
-> 8
->
-> =========Check 90 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 128.86 MB
-> 	 memory_need: 497.83 MB
-> 	 run_time: 47.29 s
-> 	 predict_time: 182.72 s
-> 8
->
-> =========Check 100 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 150.69 MB
-> 	 memory_need: 476.00 MB
-> 	 run_time: 52.77 s
-> 	 predict_time: 166.70 s
-> 8
->
-> =========Check 110 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 173.98 MB
-> 	 memory_need: 452.71 MB
-> 	 run_time: 58.09 s
-> 	 predict_time: 151.15 s
-> 8
->
-> =========Check 120 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 192.80 MB
-> 	 memory_need: 433.89 MB
-> 	 run_time: 63.42 s
-> 	 predict_time: 142.71 s
-> 8
->
-> =========Check 130 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 217.43 MB
-> 	 memory_need: 409.26 MB
-> 	 run_time: 68.98 s
-> 	 predict_time: 129.84 s
-> 8
->
-> =========Check 140 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 237.39 MB
-> 	 memory_need: 389.30 MB
-> 	 run_time: 74.34 s
-> 	 predict_time: 121.90 s
-> 8
->
-> =========Check 150 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 259.25 MB
-> 	 memory_need: 367.44 MB
-> 	 run_time: 79.87 s
-> 	 predict_time: 113.20 s
-> 8
->
-> =========Check 160 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 280.64 MB
-> 	 memory_need: 346.05 MB
-> 	 run_time: 85.52 s
-> 	 predict_time: 105.46 s
-> 8
->
-> =========Check 170 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 303.42 MB
-> 	 memory_need: 323.27 MB
-> 	 run_time: 90.90 s
-> 	 predict_time: 96.85 s
-> 8
->
-> =========Check 180 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 324.12 MB
-> 	 memory_need: 302.57 MB
-> 	 run_time: 96.51 s
-> 	 predict_time: 90.09 s
-> 8
->
-> =========Check 190 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 348.26 MB
-> 	 memory_need: 278.43 MB
-> 	 run_time: 101.81 s
-> 	 predict_time: 81.40 s
-> 8
->
-> =========Check 200 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 370.39 MB
-> 	 memory_need: 256.30 MB
-> 	 run_time: 107.15 s
-> 	 predict_time: 74.15 s
-> 8
->
-> =========Check 210 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 391.59 MB
-> 	 memory_need: 235.09 MB
-> 	 run_time: 112.61 s
-> 	 predict_time: 67.60 s
-> 8
->
-> =========Check 220 Report========
-> 	 total_page: 14
-> 	 finished_page: 8
-> 	 remain_page: 6
-> 	 memory_used: 418.54 MB
-> 	 memory_need: 208.15 MB
-> 	 run_time: 118.26 s
-> 	 predict_time: 58.81 s
-> close : 3 !
-> close : 6 !
-> close : 2 !
-> close : 4 !
-> 8
->
-> =========Check 230 Report========
-> 	 total_page: 14
-> 	 finished_page: 12
-> 	 remain_page: 2
-> 	 memory_used: 442.60 MB
-> 	 memory_need: 184.09 MB
-> 	 run_time: 123.50 s
-> 	 predict_time: 51.37 s
-> close : 1 !
-> close : 5 !
-> 2824
-> successfully download the data!
-> close: monitor ! 
->
-> Process finished with exit code 0
-
-breakpoint 信息
-
-> {"2020-12-07 19:14:05": {"id": 7, "error": "URLError"}, "2020-12-07 19:14:06": {"id": 8, "error": "URLError"}, "2020-12-07 19:14:07": {"id": 9, "error": "URLError"}, "2020-12-07 19:14:08": {"id": 10, "error": "URLError"}, "2020-12-07 19:14:09": {"id": 11, "error": "URLError"}, "2020-12-07 19:14:10": {"id": 12, "error": "URLError"}, "2020-12-07 19:14:11": {"id": 13, "error": "URLError"}, "2020-12-07 19:14:12": {"id": 14, "error": "URLError"}}
-
+> {"2020-12-17 20:03:25": {"id": 10, "error": "HTTPError"}, "2020-12-17 20:06:15": {"id": 16, "error": "URLError"}}
